@@ -1,0 +1,6 @@
+[submodule "dep/Specter"]
+	path = dep/Specter
+	url = https://github.com/MarvinMarjan/Specter.git
+[submodule "dep/Prism"]
+	path = dep/Prism
+	url = https://github.com/MarvinMarjan/Prism.git
