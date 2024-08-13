@@ -1,10 +1,11 @@
 ﻿using Specter.Color.Paint;
 using Specter.Terminal.Input;
 using Specter.Terminal.Output;
+using Specter.String;
 
 using Mate.Language;
 using Mate.Exceptions;
-using Specter.String;
+using System;
 
 
 namespace Mate;
@@ -47,6 +48,10 @@ public class MateProgram
             catch (MateException e)
             {
                 TerminalStream.WriteLine("Error: ".FGBRed() + e.ToString());
+            }
+            catch (Exception e)
+            {
+                TerminalStream.WriteLine("Error: ".FGBRed() + e.Message);
             }
         }
     }

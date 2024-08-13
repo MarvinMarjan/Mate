@@ -1,7 +1,9 @@
 using System;
 using System.Text;
-using Mate.Language;
+
 using Specter.Color;
+
+using Mate.Language;
 
 
 namespace Mate.Exceptions;

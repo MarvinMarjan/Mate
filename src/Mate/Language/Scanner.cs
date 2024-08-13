@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Globalization;
+
 using Mate.Exceptions;
 
 
@@ -84,7 +86,7 @@ public class Scanner
             AdvanceUntilNonDigit();
         }
 
-        _ = double.TryParse(CurrentSubstring(), out double value);
+        _ = double.TryParse(CurrentSubstring(), CultureInfo.InvariantCulture, out double value);
 
         AddToken(TokenType.Number, value);
     }
