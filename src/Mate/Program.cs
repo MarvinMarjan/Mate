@@ -3,7 +3,6 @@ using Specter.Terminal.Input;
 using Specter.Terminal.Output;
 using Specter.String;
 
-using Mate.Language;
 using Mate.Exceptions;
 using System;
 

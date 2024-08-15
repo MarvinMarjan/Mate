@@ -1,7 +1,10 @@
 using System.Globalization;
 using System.Text;
 
-namespace Mate.Language;
+using Mate.Language;
+
+
+namespace Mate;
 
 
 public class ASTPrinter : IExpressionProcessor<string>
