@@ -3,12 +3,17 @@ using System.Collections.Generic;
 
 using Specter.Terminal.Output;
 
+using Mate.Exceptions;
+
 
 namespace Mate.Language;
 
 
 public class Interpreter : IExpressionProcessor<double>, IStatementProcessor<object?>
 {
+    private Dictionary<string, double> _variables = [];
+
+
     public void Interpret(Statement statement)
         => statement.Process(this);
 
@@ -36,11 +41,27 @@ public class Interpreter : IExpressionProcessor<double>, IStatementProcessor<obj
         return null;
     }
 
+    public object? ProcessVarDeclarationStatement(VarDeclarationStatement statement)
+    {
+        _variables.Add(statement.Name.Lexeme, Interpret(statement.Value));
+        return null;
+    }
+
 
 
 
     public double ProcessLiteralExpression(LiteralExpression expression)
         => expression.Value is double number ? number : throw new ArgumentException("Literal is not a number.");
+
+    public double ProcessIdentifierExpression(IdentifierExpression expression)
+    {
+        string identifierName = expression.Identifier.Lexeme;
+
+        if (!_variables.TryGetValue(identifierName, out double value))
+            throw new MateException(new(expression.Identifier), "Undefined identifier.");
+
+        return value;
+    }
 
     public double ProcessBinaryExpression(BinaryExpression expression)
     {

@@ -5,6 +5,7 @@ public interface IStatementProcessor<T>
 {
     public T ProcessExpressionStatement(ExpressionStatement statement);
     public T ProcessPrintStatement(PrintStatement statement);
+    public T ProcessVarDeclarationStatement(VarDeclarationStatement statement);
 }
 
 
@@ -31,4 +32,15 @@ public class PrintStatement(Expression value) : Statement
 
     public override T Process<T>(IStatementProcessor<T> processor)
         => processor.ProcessPrintStatement(this);
+}
+
+
+public class VarDeclarationStatement(Token name, Expression value) : Statement
+{
+    public Token Name { get; init; } = name;
+    public Expression Value { get; init; } = value;
+
+
+    public override T Process<T>(IStatementProcessor<T> processor)
+        => processor.ProcessVarDeclarationStatement(this);
 }

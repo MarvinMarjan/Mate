@@ -4,6 +4,7 @@ namespace Mate.Language;
 public interface IExpressionProcessor<T>
 {
     public T ProcessLiteralExpression(LiteralExpression expression);
+    public T ProcessIdentifierExpression(IdentifierExpression expression);
     public T ProcessBinaryExpression(BinaryExpression expression);
     public T ProcessUnaryExpression(UnaryExpression expression);
     public T ProcessGroupingExpression(GroupingExpression expression);
@@ -23,6 +24,16 @@ public class LiteralExpression(object value) : Expression
 
     public override T Process<T>(IExpressionProcessor<T> processor)
         => processor.ProcessLiteralExpression(this);
+}
+
+
+public class IdentifierExpression(Token identifier) : Expression
+{
+    public Token Identifier { get; init; } = identifier;
+
+
+    public override T Process<T>(IExpressionProcessor<T> processor)
+        => processor.ProcessIdentifierExpression(this);
 }
 
 

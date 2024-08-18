@@ -7,7 +7,7 @@ using Mate.Language;
 namespace Mate;
 
 
-public class ASTPrinter : IExpressionProcessor<string>
+/* public class ASTPrinter : IExpressionProcessor<string>
 {
     public string Print(Expression expression)
         => expression.Process(this);
@@ -48,4 +48,4 @@ public class ASTPrinter : IExpressionProcessor<string>
 
         return builder.ToString();
     }
-}
+} */

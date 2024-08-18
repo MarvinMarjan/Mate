@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Collections.Generic;
 
 using Mate.Exceptions;
+using System;
 
 
 namespace Mate.Language;
@@ -60,6 +61,14 @@ public class Scanner
         case '(': AddToken(TokenType.LeftParen); break;
         case ')': AddToken(TokenType.RightParen); break;
 
+        case ':':
+            if (Match('='))
+                AddToken(TokenType.ReceiveOperator);
+            else
+                ThrowInvalidToken();
+            
+            break;
+
         default:
             if (char.IsLetter(ch))
                 Identifier();
@@ -68,11 +77,16 @@ public class Scanner
                 Number();
 
             else
-                throw new InvalidTokenException(new(TokenFromCurrent(TokenType.Invalid)), "Invalid token.");
+                ThrowInvalidToken();
 
             break;
         }
     }
+
+    
+    private void ThrowInvalidToken()
+        => throw new MateException(new(TokenFromCurrent(TokenType.Invalid)), "Invalid token.");
+
 
 
     private void AddToken(TokenType tokenType, object? value = null)
@@ -127,6 +141,15 @@ public class Scanner
         => _source[_start .. _end];
 
     private bool AtEnd() => _end >= _source.Length;
+
+    private bool Match(char ch)
+    {
+        if (AtEnd() || Peek() != ch)
+            return false;
+
+        Advance();
+        return true;
+    }
 
     private char Advance()
     {

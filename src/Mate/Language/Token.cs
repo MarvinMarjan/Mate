@@ -10,17 +10,19 @@ public enum TokenType
 
     PlusSign, MinusSign, MultiplicationSign, DivisionSign,
     LeftParen, RightParen,
+    ReceiveOperator,
 
     Identifier, Number,
 
-    Print
+    Print, Var
 }
 
 
 public readonly struct Token
 {
     public static Dictionary<string, TokenType> Keywords { get; } = new([
-        new("print", TokenType.Print)
+        new("print", TokenType.Print),
+        new("var", TokenType.Var)
     ]);
 
 

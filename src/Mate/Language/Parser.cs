@@ -24,30 +24,61 @@ public class Parser
             throw new ArgumentException("Don't parse a empty token list.");
 
         while (!AtEnd())
-            _statements.Add(Statement());
+        {
+            Statement? statement = Declaration();
+
+            if (statement is not null)
+                _statements.Add(statement);
+        }
 
         return _statements;
     }
 
 
-    private Statement Statement()
+    private Statement? Declaration()
     {
-        TokenType token = Peek().Type;
-
-        if (Token.Keywords.ContainsValue(token))
-            Advance();
-
-        return token switch
+        try
         {
-            TokenType.Print => PrintStatement(),
+            return Peek().Type switch
+            {
+                TokenType.Var => VarDeclarationStatement(),
 
-            _ => ExpressionStatement()
-        };
+                _ => Statement()
+            };
+        }
+        catch (MateException)
+        {
+            Synchronize();
+            return null;
+        }
     }
 
 
+    private Statement Statement() => Peek().Type switch
+    {
+        TokenType.Print => PrintStatement(),
+
+        _ => ExpressionStatement()
+    };
+
+
     private PrintStatement PrintStatement()
-        => new(Expression());
+    {
+        Advance();
+        return new(Expression());
+    }
+
+
+    private VarDeclarationStatement VarDeclarationStatement()
+    {
+        Advance();
+
+        Token name = Expect(TokenType.Identifier, "Variable name expected.");
+        Expect(TokenType.ReceiveOperator, "Receive operator expected.");
+        Expression value = Expression();
+
+        return new(name, value);
+    }
 
 
     private ExpressionStatement ExpressionStatement()
@@ -108,18 +139,48 @@ public class Parser
         if (Match(TokenType.Number))
             return new LiteralExpression(Previous().Value!);
 
+        if (Match(TokenType.Identifier))
+            return new IdentifierExpression(Previous());
+
         if (Match(TokenType.LeftParen))
         {
             Token start = Previous();
             Expression expression = Expression();
 
             if (!Match(TokenType.RightParen))
-                throw new UnclosedParensException(new(start), "Unclosed paren.");
+                throw new MateException(new(start), "Unclosed paren.");
 
             return new GroupingExpression(expression);
         }
 
-        throw new ExpressionExpectedException(new (AtEnd() ? Previous() : Peek()), "Expression expected.");
+        throw new MateException(new (AtEnd() ? Previous() : Peek()), "Expression expected.");
+    }
+
+
+    private void Synchronize()
+    {
+        Advance();
+
+        while (!AtEnd())
+        {
+            switch (Peek().Type)
+            {
+                case TokenType.Print:
+                case TokenType.Var:
+                    return;
+            }
+
+            Advance();
+        }
+    }
+
+
+    private Token Expect(TokenType token, string message)
+    {
+        if (Check(token))
+            return Advance();
+
+        throw new MateException(new(Peek()), message);
     }
 
 

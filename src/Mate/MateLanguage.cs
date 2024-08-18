@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 
+using Specter.Terminal.Output;
+
 using Mate.Language;
 
 
@@ -12,7 +14,7 @@ public static class MateLanguage
     public static string[] CurrentSource { get; set; } = [];
 
 
-    public static void Run(string source)
+    public static void Run(string source, Interpreter? interpreter = null)
     {
         CurrentSource = source.Split('\n');
 
@@ -22,6 +24,10 @@ public static class MateLanguage
             Environment.Exit(0);
 
         List<Statement> statements = new Parser().Parse(tokens);
-        new Interpreter().Interpret(statements);
+        
+        if (interpreter is not null)
+            interpreter.Interpret(statements);
+        else
+            new Interpreter().Interpret(statements);
     }
 }
