@@ -10,7 +10,8 @@ public enum TokenType
 
     PlusSign, MinusSign, MultiplicationSign, DivisionSign,
     LeftParen, RightParen,
-    Number,
+
+    Identifier, Number,
 
     Print
 }

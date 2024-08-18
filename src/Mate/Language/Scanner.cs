@@ -94,7 +94,10 @@ public class Scanner
         while (char.IsLetterOrDigit(Peek()))
             Advance();
 
-        AddToken(Token.Keywords[CurrentSubstring()]);
+        if (Token.Keywords.TryGetValue(CurrentSubstring(), out TokenType keyword))
+            AddToken(keyword);
+        else
+            AddToken(TokenType.Identifier);
     }
 
 

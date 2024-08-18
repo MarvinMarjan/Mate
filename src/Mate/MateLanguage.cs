@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 using Mate.Language;
@@ -16,6 +17,10 @@ public static class MateLanguage
         CurrentSource = source.Split('\n');
 
         List<Token> tokens = new Scanner().Scan(source);
+
+        if (tokens.Count == 0)
+            Environment.Exit(0);
+
         List<Statement> statements = new Parser().Parse(tokens);
         new Interpreter().Interpret(statements);
     }

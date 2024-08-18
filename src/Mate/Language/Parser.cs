@@ -119,7 +119,7 @@ public class Parser
             return new GroupingExpression(expression);
         }
 
-        throw new ExpressionExpectedException(new (Peek()), "Expression expected.");
+        throw new ExpressionExpectedException(new (AtEnd() ? Previous() : Peek()), "Expression expected.");
     }
 
 
