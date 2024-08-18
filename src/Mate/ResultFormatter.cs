@@ -6,6 +6,6 @@ namespace Mate;
 
 public static class ResultFormatter
 {
-    public static string SingleResultToString(double result)
+    public static string SingleResultToString(this double result)
         => result.ToString(CultureInfo.InvariantCulture);
 }

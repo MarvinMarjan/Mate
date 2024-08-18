@@ -1,6 +1,7 @@
-using Mate.Language;
 using Specter.ANSI;
 using Specter.Color;
+
+using Mate.Language;
 
 
 namespace Mate.Exceptions;
@@ -10,11 +11,12 @@ public static class ExceptionFormatter
 {
     public static string HighlightTokenRangeFromCurrentSource(TokenRange tokenRange, ColorObject color)
     {
-        string result = MateLanguage.CurrentSource;
+        string[] languageSource = MateLanguage.CurrentSource;
+        string line = languageSource[tokenRange.Start.Line - 1];
 
-        result = result.Insert(tokenRange.End.End, EscapeCodes.Reset);
-        result = result.Insert(tokenRange.Start.Start, color.AsSequence());
+        line = line.Insert(tokenRange.End.End, EscapeCodes.Reset);
+        line = line.Insert(tokenRange.Start.Start, color.AsSequence());
 
-        return result;
+        return line;
     }
 }

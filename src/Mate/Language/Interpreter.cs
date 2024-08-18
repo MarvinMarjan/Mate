@@ -1,13 +1,42 @@
 using System;
+using System.Collections.Generic;
+
+using Specter.Terminal.Output;
 
 
 namespace Mate.Language;
 
 
-public class Interpreter : IExpressionProcessor<double>
+public class Interpreter : IExpressionProcessor<double>, IStatementProcessor<object?>
 {
+    public void Interpret(Statement statement)
+        => statement.Process(this);
+
+    public void Interpret(List<Statement> statements)
+    {
+        foreach (Statement statement in statements)
+            statement.Process(this);
+    }
+
     public double Interpret(Expression expression)
         => expression.Process(this);
+
+
+
+
+    public object? ProcessExpressionStatement(ExpressionStatement statement)
+    {
+        Interpret(statement.Expression);
+        return null;
+    }
+
+    public object? ProcessPrintStatement(PrintStatement statement)
+    {
+        TerminalStream.WriteLine(Interpret(statement.Value).SingleResultToString());
+        return null;
+    }
+
+
 
 
     public double ProcessLiteralExpression(LiteralExpression expression)

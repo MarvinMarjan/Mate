@@ -1,10 +1,12 @@
-﻿using Specter.Color.Paint;
+﻿using System;
+using System.IO;
+
+using Specter.Color.Paint;
 using Specter.Terminal.Input;
 using Specter.Terminal.Output;
 using Specter.String;
 
 using Mate.Exceptions;
-using System;
 
 
 namespace Mate;
@@ -33,25 +35,36 @@ public class MateREPL : DefaultInputStream
 
 public class MateProgram
 {
-    public static void Main()
+    public static void Main(string[] args)
+    {
+        try
+        {
+            if (args.Length >= 1)
+                RunFile(args[0]);
+            else
+                RunREPL();
+        }
+        catch (MateException e)
+        {
+            TerminalStream.WriteLine("Error: ".FGBRed() + e.ToString());
+        }
+        catch (Exception e)
+        {
+            TerminalStream.WriteLine("Error: ".FGBRed() + e.Message);
+        }
+    }
+
+
+    public static void RunFile(string path)
+        => MateLanguage.Run(File.ReadAllText(path));
+
+
+    public static void RunREPL()
     {
         while (true)
         {
-            try
-            {
-                TerminalStream.Write("> ");
-                string input = new MateREPL().Read();
-    
-                MateLanguage.Run(input);
-            }
-            catch (MateException e)
-            {
-                TerminalStream.WriteLine("Error: ".FGBRed() + e.ToString());
-            }
-            catch (Exception e)
-            {
-                TerminalStream.WriteLine("Error: ".FGBRed() + e.Message);
-            }
+            TerminalStream.Write("> ");
+            MateLanguage.Run(new MateREPL().Read());
         }
     }
 }

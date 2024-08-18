@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using System.Globalization;
+using System.Collections.Generic;
 
 using Mate.Exceptions;
 
@@ -11,6 +11,8 @@ public class Scanner
 {
     private string _source = "";
     private int _start, _end;
+    private int _relativeStart, _relativeEnd;
+    private int _line;
 
     private List<Token> _tokens = [];
 
@@ -19,12 +21,15 @@ public class Scanner
     {
         _source = source;
         _start = _end = 0;
+        _relativeStart = _relativeEnd = 0;
+        _line = 1;
 
         _tokens = [];
 
         while (!AtEnd())
         {
             _start = _end;
+            _relativeStart = _relativeEnd;
             ScanToken();
         }
 
@@ -40,7 +45,11 @@ public class Scanner
         {
         case ' ':
         case '\t':
+            break;
+
         case '\n':
+            _line++;
+            _relativeStart = _relativeEnd = 0;
             break;
 
         case '+': AddToken(TokenType.PlusSign); break;
@@ -52,9 +61,12 @@ public class Scanner
         case ')': AddToken(TokenType.RightParen); break;
 
         default:
-            if (char.IsDigit(ch))
+            if (char.IsLetter(ch))
+                Identifier();
+
+            else if (char.IsDigit(ch))
                 Number();
-            
+
             else
                 throw new InvalidTokenException(new(TokenFromCurrent(TokenType.Invalid)), "Invalid token.");
 
@@ -69,11 +81,21 @@ public class Scanner
     private Token TokenFromCurrent(TokenType tokenType, object? value = null)
         => new() {
             Lexeme =  CurrentSubstring(),
-            Start = _start,
-            End = _end,
+            Start = _relativeStart,
+            End = _relativeEnd,
+            Line = _line,
             Value = value,
             Type = tokenType
         };
+
+
+    private void Identifier()
+    {
+        while (char.IsLetterOrDigit(Peek()))
+            Advance();
+
+        AddToken(Token.Keywords[CurrentSubstring()]);
+    }
 
 
     private void Number()
@@ -103,7 +125,17 @@ public class Scanner
 
     private bool AtEnd() => _end >= _source.Length;
 
-    private char Advance() => !AtEnd() ? _source[_end++] : '\0';
+    private char Advance()
+    {
+        if (!AtEnd())
+        {
+            _relativeEnd++;
+            return _source[_end++];
+        }
+
+        return '\0';
+    }
+
     private char Peek() => !AtEnd() ? _source[_end] : '\0';
     private char Next() => _source[_end + 1];
 }

@@ -10,19 +10,50 @@ namespace Mate.Language;
 public class Parser
 {
     private List<Token> _tokens = [];
+    private List<Statement> _statements = [];
     private int _current = 0;
 
 
-    public Expression Parse(List<Token> tokens)
+    public List<Statement> Parse(List<Token> tokens)
     {
         _tokens = tokens;
+        _statements = [];
         _current = 0;
 
         if (_tokens.Count == 0)
             throw new ArgumentException("Don't parse a empty token list.");
 
-        return Expression();
+        while (!AtEnd())
+            _statements.Add(Statement());
+
+        return _statements;
     }
+
+
+    private Statement Statement()
+    {
+        TokenType token = Peek().Type;
+
+        if (Token.Keywords.ContainsValue(token))
+            Advance();
+
+        return token switch
+        {
+            TokenType.Print => PrintStatement(),
+
+            _ => ExpressionStatement()
+        };
+    }
+
+
+    private PrintStatement PrintStatement()
+        => new(Expression());
+
+
+    private ExpressionStatement ExpressionStatement()
+        => new(Expression());
+
+
 
 
     private Expression Expression()
