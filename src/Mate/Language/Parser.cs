@@ -25,33 +25,29 @@ public class Parser
 
         while (!AtEnd())
         {
-            Statement? statement = Declaration();
+            try
+            {
+                _statements.Add(Declaration());
+            }
+            catch (MateException e)
+            {
+                MateLanguage.LogError(e);
 
-            if (statement is not null)
-                _statements.Add(statement);
+                Synchronize();
+                continue;
+            }
         }
 
         return _statements;
     }
 
 
-    private Statement? Declaration()
+    private Statement Declaration() => Peek().Type switch
     {
-        try
-        {
-            return Peek().Type switch
-            {
-                TokenType.Var => VarDeclarationStatement(),
+        TokenType.Var => VarDeclarationStatement(),
 
-                _ => Statement()
-            };
-        }
-        catch (MateException)
-        {
-            Synchronize();
-            return null;
-        }
-    }
+        _ => Statement()
+    };
 
 
     private Statement Statement() => Peek().Type switch

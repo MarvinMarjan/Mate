@@ -35,10 +35,14 @@ public class MateException : Exception
     {
         StringBuilder builder = new();
 
-        string highlightedToken = ExceptionFormatter.HighlightTokenRangeFromCurrentSource(TokenRange, ColorObject.FromColor16(Color16.FGRed, null, ColorMode.Underline));
+        string arrow = ExceptionFormatter.GenerateHighlightArrowFromRange(TokenRange, ColorObject.FromColor16(Color16.FGRed));
+        string line = MateLanguage.CurrentSource[TokenRange.Start.Line - 1];
 
+        string lineNumber = $"{TokenRange.Start.Line}. ";
+        arrow = new string(' ', lineNumber.Length) + arrow;
+    
         builder.AppendLine(Message);
-        builder.AppendLine("---> " + highlightedToken);
+        builder.AppendLine($"{lineNumber}{MateLanguage.GlobalPainter.Paint(line)}\n{arrow}");
 
         return builder.ToString();
     }

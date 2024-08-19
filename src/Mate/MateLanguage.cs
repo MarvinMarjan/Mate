@@ -1,9 +1,15 @@
 using System;
 using System.Collections.Generic;
 
+using Specter.String;
 using Specter.Terminal.Output;
+using Specter.Color;
+using Specter.Color.Paint;
 
 using Mate.Language;
+using Mate.Exceptions;
+
+using Token = Mate.Language.Token;
 
 
 namespace Mate;
@@ -12,6 +18,25 @@ namespace Mate;
 public static class MateLanguage
 {
     public static string[] CurrentSource { get; set; } = [];
+    public static bool Failed { get; private set; }
+
+    public static RulePainter GlobalPainter { get; set; } = new RulePainter([
+        new EqualityRule(156, [
+            "+", "-", "*", "/", "(", ")", ":", "="
+        ]),
+        new ConditionalRule(215, new LogicCondition(
+            LogicCondition.LogicOperation.Or,
+            new TokenIsNumber(),
+            new TokenIsTarget(".")
+        )),
+        new EqualityRule(111, [
+            "print", "var"
+        ]),
+        new BetweenRule(ColorObject.FromColor256(241, mode: ColorMode.Italic), "#", new("\n") {ShouldIgnoreWhitespace = false}),
+        new BetweenRule(ColorObject.FromColor256(241, mode: ColorMode.Italic),
+            new("#", "<"), new(">", "#")
+        )
+    ]);
 
 
     public static void Run(string source, Interpreter? interpreter = null)
@@ -27,7 +52,14 @@ public static class MateLanguage
         
         if (interpreter is not null)
             interpreter.Interpret(statements);
-        else
+        else if (!Failed)
             new Interpreter().Interpret(statements);
+    }
+
+
+    public static void LogError(Exception exception)
+    {
+        TerminalStream.WriteLine("Error: ".FGBRed() + (exception is MateException ? exception.ToString() : exception.Message));
+        Failed = true;
     }
 }

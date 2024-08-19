@@ -2,7 +2,6 @@ using System.Globalization;
 using System.Collections.Generic;
 
 using Mate.Exceptions;
-using System;
 
 
 namespace Mate.Language;
@@ -49,8 +48,15 @@ public class Scanner
             break;
 
         case '\n':
-            _line++;
-            _relativeStart = _relativeEnd = 0;
+            Newline();
+            break;
+
+        case '#':
+            if (Match('<'))
+                MultiLineComment();
+            else
+                SingleLineComment();
+            
             break;
 
         case '+': AddToken(TokenType.PlusSign); break;
@@ -92,7 +98,7 @@ public class Scanner
     private void AddToken(TokenType tokenType, object? value = null)
         => _tokens.Add(TokenFromCurrent(tokenType, value));
 
-    private Token TokenFromCurrent(TokenType tokenType, object? value = null)
+    private Token TokenFromCurrent(TokenType tokenType = TokenType.Invalid, object? value = null)
         => new() {
             Lexeme =  CurrentSubstring(),
             Start = _relativeStart,
@@ -137,10 +143,35 @@ public class Scanner
     }
 
 
+    private void SingleLineComment()
+    {
+        while (Peek() != '\n')
+            Advance();
+    }
+
+    private void MultiLineComment()
+    {
+        Token commentStart = TokenFromCurrent();
+
+        while (true)
+        {
+            if (NextIsEnd())
+                throw new MateException(new(commentStart), "Unclosed comment.");
+
+            if (Match('>') && Match('#'))
+                break;
+
+            if (Advance() == '\n')
+                Newline();
+        }
+    }
+
+
     private string CurrentSubstring()
         => _source[_start .. _end];
 
     private bool AtEnd() => _end >= _source.Length;
+    private bool NextIsEnd() => _end + 1 >= _source.Length;
 
     private bool Match(char ch)
     {
@@ -164,4 +195,11 @@ public class Scanner
 
     private char Peek() => !AtEnd() ? _source[_end] : '\0';
     private char Next() => _source[_end + 1];
+
+
+    private void Newline()
+    {
+        _line++;
+        _relativeStart = _relativeEnd = 0;
+    }
 }

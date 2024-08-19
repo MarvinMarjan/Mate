@@ -1,12 +1,10 @@
 ﻿using System;
 using System.IO;
 
-using Specter.Color.Paint;
 using Specter.Terminal.Input;
 using Specter.Terminal.Output;
 using Specter.String;
 
-using Mate.Exceptions;
 using Mate.Language;
 
 
@@ -17,25 +15,21 @@ public class MateREPL : DefaultInputStream
 {
     public MateREPL() : base()
     {
-        Painter = new RulePainter([
-            new EqualityRule(156, [
-                "+", "-", "*", "/", "(", ")", ":", "="
-            ]),
-            new ConditionalRule(215, new LogicCondition(
-                LogicCondition.LogicOperation.Or,
-                new TokenIsNumber(),
-                new TokenIsTarget(".")
-            )),
-            new EqualityRule(111, [
-                "print", "var"
-            ]) 
-        ])
-        {
-            Cursor = Cursor
-        };
+        Painter = MateLanguage.GlobalPainter;
+        Painter.Cursor = Cursor;
     }
 }
 
+
+// TODO: add notation for representing large numbers:
+
+// 1000000 = 1_000_000 or 1mi or 1000m (there's also 1bi)
+
+// TODO: add first-degree equation solution
+// TODO: add support for the following notation:
+
+// var x = 10
+// print 2x # 2 * 10
 
 public class MateProgram
 {
@@ -54,13 +48,9 @@ public class MateProgram
         {
             action();
         }
-        catch (MateException e)
-        {
-            TerminalStream.WriteLine("Error: ".FGBRed() + e.ToString());
-        }
         catch (Exception e)
         {
-            TerminalStream.WriteLine("Error: ".FGBRed() + e.Message);
+            MateLanguage.LogError(e);
         }
     }
 
