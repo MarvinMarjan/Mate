@@ -11,7 +11,11 @@ namespace Mate.Language;
 
 public class Interpreter : IExpressionProcessor<double>, IStatementProcessor<object?>
 {
-    private Dictionary<string, double> _variables = [];
+    private Dictionary<string, double> _variables = new([
+        new("k", 1_000),
+        new("m", 1_000_000),
+        new("b", 1_000_000_000)
+    ]);
 
 
     public void Interpret(Statement statement)

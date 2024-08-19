@@ -131,14 +131,18 @@ public class Scanner
             AdvanceUntilNonDigit();
         }
 
-        _ = double.TryParse(CurrentSubstring(), CultureInfo.InvariantCulture, out double value);
+        string stringNumber = CurrentSubstring().Replace("_", "");
+
+        _ = double.TryParse(stringNumber, CultureInfo.InvariantCulture, out double value);
 
         AddToken(TokenType.Number, value);
     }
 
     private void AdvanceUntilNonDigit()
     {
-        while (char.IsDigit(Peek()))
+        char ch;
+
+        while (char.IsDigit(ch = Peek()) || ch == '_')
             Advance();
     }
 

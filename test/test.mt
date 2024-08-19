@@ -1,9 +1,11 @@
-var num1 := 90
-var num2 := num1 / 2
+print 1k
+print 90k
 
-var result := num1 + num2
+print 1m
+print 5m - 500k
 
-print 10
-print result # single line comment!
-print num1 #< Multi-line >#
-print num2
+print 99b
+
+print k
+
+print 1_000_000

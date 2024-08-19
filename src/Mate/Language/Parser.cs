@@ -42,6 +42,8 @@ public class Parser
     }
 
 
+
+
     private Statement Declaration() => Peek().Type switch
     {
         TokenType.Var => VarDeclarationStatement(),
@@ -83,19 +85,37 @@ public class Parser
 
 
 
+
+
+
+
     private Expression Expression()
         => Term();
 
 
     private Expression Term()
     {
-        Expression expression = Factor();
+        Expression expression = SufixFactor();
 
         while (Match(TokenType.PlusSign, TokenType.MinusSign))
         {
             Token @operator = Previous();
-            Expression right = Factor();
+            Expression right = SufixFactor();
             expression = new BinaryExpression(expression, @operator, right);
+        }
+
+        return expression;
+    }
+
+
+    private Expression SufixFactor()
+    {
+        Expression expression = Factor();
+
+        if (Match(TokenType.Identifier))
+        {
+            Token pseudoToken = Previous() with { Type = TokenType.MultiplicationSign };
+            expression = new BinaryExpression(expression, pseudoToken, new IdentifierExpression(Previous()));
         }
 
         return expression;

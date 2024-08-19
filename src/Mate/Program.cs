@@ -26,7 +26,6 @@ public class MateREPL : DefaultInputStream
 // 1000000 = 1_000_000 or 1mi or 1000m (there's also 1bi)
 
 // TODO: add first-degree equation solution
-// TODO: add support for the following notation:
 
 // var x = 10
 // print 2x # 2 * 10
