@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Specter.Terminal.Output;
 
 using Mate.Exceptions;
+using Mate.Language.Calculation;
 
 
 namespace Mate.Language;
@@ -11,7 +12,7 @@ namespace Mate.Language;
 
 public class Interpreter : IExpressionProcessor<double>, IStatementProcessor<object?>
 {
-    private Dictionary<string, double> _variables = new([
+    public Dictionary<string, double> Variables { get; init; } = new([
         new("k", 1_000),
         new("m", 1_000_000),
         new("b", 1_000_000_000)
@@ -47,7 +48,7 @@ public class Interpreter : IExpressionProcessor<double>, IStatementProcessor<obj
 
     public object? ProcessVarDeclarationStatement(VarDeclarationStatement statement)
     {
-        _variables.Add(statement.Name.Lexeme, Interpret(statement.Value));
+        Variables.Add(statement.Name.Lexeme, Interpret(statement.Value));
         return null;
     }
 
@@ -61,7 +62,7 @@ public class Interpreter : IExpressionProcessor<double>, IStatementProcessor<obj
     {
         string identifierName = expression.Identifier.Lexeme;
 
-        if (!_variables.TryGetValue(identifierName, out double value))
+        if (!Variables.TryGetValue(identifierName, out double value))
             throw new MateException(new(expression.Identifier), "Undefined identifier.");
 
         return value;
@@ -97,4 +98,13 @@ public class Interpreter : IExpressionProcessor<double>, IStatementProcessor<obj
     
     public double ProcessGroupingExpression(GroupingExpression expression)
         => Interpret(expression.Expression);
+
+
+    public double ProcessFractionExpression(FractionExpression expression)
+    {
+        double numerator = Interpret(expression.Numerator);
+        double denominator = Interpret(expression.Denominator);
+
+        return numerator / denominator;
+    }
 }

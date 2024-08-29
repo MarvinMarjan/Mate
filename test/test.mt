@@ -1,11 +1,3 @@
-print 1k
-print 90k
+var frac := [144|12] -> simplified
 
-print 1m
-print 5m - 500k
-
-print 99b
-
-print k
-
-print 1_000_000
+print frac

@@ -63,9 +63,13 @@ public class Scanner
         case '-': AddToken(TokenType.MinusSign); break;
         case '*': AddToken(TokenType.MultiplicationSign); break;
         case '/': AddToken(TokenType.DivisionSign); break;
+        case '=': AddToken(TokenType.EqualSign); break;
+        case '|': AddToken(TokenType.FractionOperator); break;
 
         case '(': AddToken(TokenType.LeftParen); break;
         case ')': AddToken(TokenType.RightParen); break;
+        case '[': AddToken(TokenType.LeftBrace); break;
+        case ']': AddToken(TokenType.RightBrace); break;
 
         case ':':
             if (Match('='))

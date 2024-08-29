@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 
+
 namespace Mate.Language;
 
 
@@ -8,9 +9,9 @@ public enum TokenType
 {
     Invalid,
 
-    PlusSign, MinusSign, MultiplicationSign, DivisionSign,
-    LeftParen, RightParen,
-    ReceiveOperator,
+    PlusSign, MinusSign, MultiplicationSign, DivisionSign, EqualSign,
+    LeftParen, RightParen, LeftBrace, RightBrace,
+    FractionOperator, ReceiveOperator,
 
     Identifier, Number,
 
@@ -23,6 +24,17 @@ public readonly struct Token
     public static Dictionary<string, TokenType> Keywords { get; } = new([
         new("print", TokenType.Print),
         new("var", TokenType.Var)
+    ]);
+
+    public static Dictionary<string, TokenType> Operators { get; } = new([
+        new("+", TokenType.PlusSign),
+        new("-", TokenType.MinusSign),
+        new("*", TokenType.MultiplicationSign),
+        new("/", TokenType.DivisionSign),
+        new("(", TokenType.LeftParen),
+        new(")", TokenType.RightParen),
+        new("=", TokenType.EqualSign),
+        new(":=", TokenType.ReceiveOperator)
     ]);
 
 

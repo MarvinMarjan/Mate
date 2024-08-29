@@ -90,7 +90,7 @@ public class Parser
 
 
     private Expression Expression()
-        => Term();
+        => Term(); 
 
 
     private Expression Term()
@@ -159,18 +159,40 @@ public class Parser
             return new IdentifierExpression(Previous());
 
         if (Match(TokenType.LeftParen))
-        {
-            Token start = Previous();
-            Expression expression = Expression();
+            return ParseGroupingExpression();
 
-            if (!Match(TokenType.RightParen))
-                throw new MateException(new(start), "Unclosed paren.");
-
-            return new GroupingExpression(expression);
-        }
+        if (Match(TokenType.LeftBrace))
+            return ParseFractionExpression();
 
         throw new MateException(new (AtEnd() ? Previous() : Peek()), "Expression expected.");
     }
+
+
+    private GroupingExpression ParseGroupingExpression()
+    {
+        Token start = Previous();
+        Expression expression = Expression();
+
+        Expect(TokenType.RightParen, "Unclosed paren.", start);
+
+        return new GroupingExpression(expression);
+    }
+
+
+    private FractionExpression ParseFractionExpression()
+    {
+        Token start = Previous();
+            
+        Expression numerator = Expression();
+        Expect(TokenType.FractionOperator, "Expect fraction separator ('|') after numerator.");
+        Expression denominator = Expression();
+
+        Expect(TokenType.RightBrace, "Fraction not closed.", start);
+
+        return new FractionExpression(numerator, denominator);
+    }
+
+
 
 
     private void Synchronize()
@@ -191,12 +213,12 @@ public class Parser
     }
 
 
-    private Token Expect(TokenType token, string message)
+    private Token Expect(TokenType token, string message, Token? reference = null)
     {
         if (Check(token))
             return Advance();
 
-        throw new MateException(new(Peek()), message);
+        throw new MateException(new(reference ?? Peek()), message);
     }
 
 

@@ -7,7 +7,7 @@ using Mate.Language;
 namespace Mate;
 
 
-/* public class ASTPrinter : IExpressionProcessor<string>
+public class ASTPrinter : IExpressionProcessor<string>
 {
     public string Print(Expression expression)
         => expression.Process(this);
@@ -22,6 +22,9 @@ namespace Mate;
         return expression.Value.ToString() ?? "invalid";
     }
 
+    public string ProcessIdentifierExpression(IdentifierExpression expression)
+        => Stringify(expression.Identifier.Lexeme);
+
     public string ProcessBinaryExpression(BinaryExpression expression)
         => Stringify(expression.Operator.Lexeme, expression.Left, expression.Right);
 
@@ -30,6 +33,9 @@ namespace Mate;
 
     public string ProcessGroupingExpression(GroupingExpression expression)
         => Stringify("group", expression.Expression);
+
+    public string ProcessFractionExpression(FractionExpression expression)
+        => Stringify("fraction", expression.Numerator, expression.Denominator);
 
 
     private string Stringify(string name, params Expression[] expressions)
@@ -48,4 +54,4 @@ namespace Mate;
 
         return builder.ToString();
     }
-} */
+}

@@ -17,6 +17,8 @@ namespace Mate;
 
 public static class MateLanguage
 {
+    public static Interpreter CurrentInterpreter { get; private set; } = new();
+
     public static string[] CurrentSource { get; set; } = [];
     public static bool Failed { get; private set; }
 
@@ -41,6 +43,7 @@ public static class MateLanguage
 
     public static void Run(string source, Interpreter? interpreter = null)
     {
+        CurrentInterpreter = new();
         CurrentSource = source.Split('\n');
 
         List<Token> tokens = new Scanner().Scan(source);
@@ -50,10 +53,8 @@ public static class MateLanguage
 
         List<Statement> statements = new Parser().Parse(tokens);
         
-        if (interpreter is not null)
-            interpreter.Interpret(statements);
-        else if (!Failed)
-            new Interpreter().Interpret(statements);
+        if (!Failed)
+            CurrentInterpreter.Interpret(statements);
     }
 
 

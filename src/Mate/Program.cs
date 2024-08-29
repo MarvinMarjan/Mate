@@ -21,15 +21,6 @@ public class MateREPL : DefaultInputStream
 }
 
 
-// TODO: add notation for representing large numbers:
-
-// 1000000 = 1_000_000 or 1mi or 1000m (there's also 1bi)
-
-// TODO: add first-degree equation solution
-
-// var x = 10
-// print 2x # 2 * 10
-
 public class MateProgram
 {
     public static void Main(string[] args)
